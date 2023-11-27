@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
@@ -28,9 +29,11 @@ public class Rocket : MonoBehaviour
         {
             case "Friend":
                 break;
-            case "Fuel":
+            case "Finish":
+                SceneManager.LoadScene((SceneManager.GetActiveScene().buildIndex + 1) % SceneManager.sceneCountInBuildSettings);
                 break;
             default:
+                SceneManager.LoadScene(0);
                 break;
         }
     }
