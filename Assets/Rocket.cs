@@ -9,9 +9,14 @@ public class Rocket : MonoBehaviour
     Rigidbody rigidbody;
     AudioSource audioSource;
 
+    enum State { Alive, Dying, Leveling }
+    State state;
+    // State state = State.Alive; also works
+
     // Start is called before the first frame update
     void Start()
     {
+        state = State.Alive;
         rigidbody = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
     }
@@ -19,21 +24,29 @@ public class Rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Throttle();
-        Rotate();
+        // because when invoke waits 1 second update atill runs
+        if (state == State.Alive)
+        {
+            Throttle();
+            Rotate();
+        }
     }
 
     void OnCollisionEnter(Collision collision)
     {
+        if (state != State.Alive) return;
+
         switch (collision.gameObject.tag)
         {
             case "Friend":
                 break;
             case "Finish":
-                SceneManager.LoadScene((SceneManager.GetActiveScene().buildIndex + 1) % SceneManager.sceneCountInBuildSettings);
+                state = State.Leveling;
+                Invoke("LoadNextScene", 1f);
                 break;
             default:
-                SceneManager.LoadScene(0);
+                state = State.Dying;
+                Invoke("LoadFirstLevel", 1f);
                 break;
         }
     }
@@ -71,5 +84,16 @@ public class Rocket : MonoBehaviour
 
         // resumes physics control of the rotation
         rigidbody.freezeRotation = false;
+    }
+
+
+    void LoadFirstLevel()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    void LoadNextScene()
+    {
+        SceneManager.LoadScene((SceneManager.GetActiveScene().buildIndex + 1) % SceneManager.sceneCountInBuildSettings);
     }
 }
