@@ -3,11 +3,19 @@ using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
+    [SerializeField] AudioClip engineSound;
+    [SerializeField] AudioClip victorySound;
+    [SerializeField] AudioClip deathSound;
+    [SerializeField] ParticleSystem engineParticle;
+    [SerializeField] ParticleSystem victoryParticle;
+    [SerializeField] ParticleSystem deathParticle;
     [SerializeField] float rocketMass = 0.1f;
     [SerializeField] float frameRotationSpeed = 100f; // Reaction control system Thrust
     [SerializeField] float throttleSpeed = 100f;
+    [SerializeField] float levelLoadDelay = 1f;
     Rigidbody rigidbody;
     AudioSource audioSource;
+    bool collisionDetectionEnabled = true;
 
     enum State { Alive, Dying, Leveling }
     State state;
@@ -30,11 +38,13 @@ public class Rocket : MonoBehaviour
             Throttle();
             Rotate();
         }
+
+        if (Debug.isDebugBuild) DebugKeys();
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive) return;
+        if (state != State.Alive || !collisionDetectionEnabled) return;
 
         switch (collision.gameObject.tag)
         {
@@ -42,11 +52,17 @@ public class Rocket : MonoBehaviour
                 break;
             case "Finish":
                 state = State.Leveling;
-                Invoke("LoadNextScene", 1f);
+                audioSource.Stop();
+                audioSource.PlayOneShot(victorySound);
+                victoryParticle.Play();
+                Invoke("LoadNextScene", levelLoadDelay);
                 break;
             default:
                 state = State.Dying;
-                Invoke("LoadFirstLevel", 1f);
+                audioSource.Stop();
+                audioSource.PlayOneShot(deathSound);
+                deathParticle.Play();
+                Invoke("LoadFirstLevel", levelLoadDelay);
                 break;
         }
     }
@@ -58,11 +74,16 @@ public class Rocket : MonoBehaviour
             rigidbody.mass = rocketMass;
             rigidbody.AddRelativeForce(Vector3.up * throttleSpeed * Time.deltaTime);
             // we add if because when we hold space it will try to play again and again
-            if (!audioSource.isPlaying) audioSource.Play();
+            // plays default clip on the audio source
+            // if (!audioSource.isPlaying) audioSource.Play();
+            // plays the audio clip passed to the function
+            engineParticle.Play();
+            if (!audioSource.isPlaying) audioSource.PlayOneShot(engineSound);
         }
         else
         {
             audioSource.Stop();
+            engineParticle.Stop();
         }
     }
 
@@ -95,5 +116,16 @@ public class Rocket : MonoBehaviour
     void LoadNextScene()
     {
         SceneManager.LoadScene((SceneManager.GetActiveScene().buildIndex + 1) % SceneManager.sceneCountInBuildSettings);
+    }
+
+    void DebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L)) LoadNextScene();
+        if (Input.GetKeyDown(KeyCode.C)) ToggleCollisionDetection();
+    }
+
+    void ToggleCollisionDetection()
+    {
+        collisionDetectionEnabled = !collisionDetectionEnabled;
     }
 }
