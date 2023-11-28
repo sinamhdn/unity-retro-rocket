@@ -89,7 +89,9 @@ public class Rocket : MonoBehaviour
 
     void Rotate()
     {
-        rigidbody.freezeRotation = true;
+        // freezing rotation make the game object fall slowly
+        // rigidbody.freezeRotation = true;
+        rigidbody.angularVelocity = Vector3.zero; // remove physics rotation
 
         if (Input.GetKey(KeyCode.A))
         {
@@ -104,7 +106,7 @@ public class Rocket : MonoBehaviour
         }
 
         // resumes physics control of the rotation
-        rigidbody.freezeRotation = false;
+        // rigidbody.freezeRotation = false;
     }
 
 
