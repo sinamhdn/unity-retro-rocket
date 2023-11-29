@@ -1,4 +1,4 @@
-# Rtro Rocket
+# Retro Rocket
 A simple pass the obstacles style demo project in unity
 
 ![Screenshot](https://github.com/sinamhdn/unity-retro-rocket/assets/34884156/fd506e83-7f83-4648-81fd-faec44919cd6)
