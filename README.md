@@ -1,7 +1,7 @@
 # Rtro Rocket
 A 3d retry-clone demo project 
 
-![screenshot](https://github.com/sinamhdn/unity-tilemap-adventure/assets/34884156/6c9800c6-d3fe-4986-97c0-2d40cf5315e6)
+![Screenshot](https://github.com/sinamhdn/unity-retro-rocket/assets/34884156/fd506e83-7f83-4648-81fd-faec44919cd6)
 
 ## Unity Version
 2022.3.2f1 LTS
